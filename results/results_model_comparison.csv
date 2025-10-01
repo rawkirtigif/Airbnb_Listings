@@ -1,0 +1,4 @@
+Model,R²,Adj R²,AIC,BIC,F-stat
+RQ1: Acceptance Rate,0.0057,0.0057,633229.24,633255.93,309.82
+RQ2: Minimum Nights,1e-4,1e-4,686998.3,687025.22,3.98
+RQ3: Multiple Regression,0.3827,0.3826,581389.34,581451.29,6386.17
