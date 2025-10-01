@@ -1,0 +1,817 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>London Airbnb Pricing Analysis | Kirti Rawat</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --airbnb-red: #FF385C;
+            --airbnb-dark: #222222;
+            --airbnb-gray: #717171;
+            --airbnb-light: #F7F7F7;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            color: var(--airbnb-dark);
+            background: #FFFFFF;
+            line-height: 1.65;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Cover with London imagery */
+        .cover {
+            min-height: 100vh;
+            background: linear-gradient(135deg, rgba(255,56,92,0.95) 0%, rgba(189,30,89,0.95) 100%),
+                        url('https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=1600') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 60px 40px;
+            position: relative;
+        }
+
+        .cover-content {
+            max-width: 800px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cover-icon {
+            font-size: 80px;
+            margin-bottom: 30px;
+            animation: float 3s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .cover h1 {
+            font-size: 64px;
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 32px;
+            letter-spacing: -1px;
+        }
+
+        .cover-subtitle {
+            font-size: 24px;
+            font-weight: 300;
+            margin-bottom: 48px;
+            line-height: 1.5;
+        }
+
+        .cover-meta {
+            font-size: 16px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 40px;
+        }
+
+        /* Quick Stats Banner */
+        .quick-stats {
+            padding: 80px 0;
+            background: linear-gradient(180deg, #F9F9F9 0%, #FFFFFF 100%);
+        }
+
+        .stats-title {
+            text-align: center;
+            font-size: 36px;
+            font-weight: 600;
+            color: #222222;
+            margin-bottom: 16px;
+        }
+
+        .stats-subtitle {
+            text-align: center;
+            font-size: 20px;
+            color: #717171;
+            margin-bottom: 60px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 16px;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            transition: transform 0.3s;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-8px);
+        }
+
+        .stat-icon {
+            font-size: 40px;
+            margin-bottom: 20px;
+        }
+
+        .stat-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #FF385C;
+            margin-bottom: 12px;
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 15px;
+            color: #717171;
+            font-weight: 500;
+        }
+
+        /* Section */
+        .section {
+            padding: 100px 0;
+        }
+
+        .section-label {
+            color: #FF385C;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            margin-bottom: 16px;
+        }
+
+        .section-title {
+            font-size: 42px;
+            font-weight: 600;
+            color: #222222;
+            margin-bottom: 24px;
+            line-height: 1.2;
+        }
+
+        .section-intro {
+            font-size: 22px;
+            color: #484848;
+            line-height: 1.6;
+            margin-bottom: 50px;
+        }
+
+        .content {
+            font-size: 18px;
+            color: #484848;
+            line-height: 1.8;
+        }
+
+        .content p {
+            margin-bottom: 24px;
+        }
+
+        /* Image with context */
+        .visual-block {
+            margin: 60px 0;
+            background: #F9F9F9;
+            padding: 50px;
+            border-radius: 20px;
+        }
+
+        .visual-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #222222;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .visual-subtitle {
+            font-size: 15px;
+            color: #717171;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .visual-block img {
+            width: 100%;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+        }
+
+        /* Insight card */
+        .insight {
+            background: linear-gradient(135deg, #FFF5F7 0%, #FFFFFF 100%);
+            border-left: 4px solid #FF385C;
+            padding: 40px;
+            border-radius: 12px;
+            margin: 50px 0;
+        }
+
+        .insight-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .insight-emoji {
+            font-size: 36px;
+        }
+
+        .insight-label {
+            font-size: 18px;
+            font-weight: 600;
+            color: #FF385C;
+        }
+
+        .insight-content {
+            font-size: 19px;
+            color: #222222;
+            line-height: 1.7;
+        }
+
+        /* Data table */
+        table {
+            width: 100%;
+            margin: 40px 0;
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+        }
+
+        thead {
+            background: #F9F9F9;
+        }
+
+        th {
+            padding: 20px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #222222;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 24px 20px;
+            border-top: 1px solid #EBEBEB;
+            font-size: 17px;
+            color: #222222;
+        }
+
+        tbody tr:hover {
+            background: #FAFAFA;
+        }
+
+        /* Action cards */
+        .action-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin: 60px 0;
+        }
+
+        .action-card {
+            background: white;
+            border: 2px solid #EBEBEB;
+            border-radius: 16px;
+            padding: 40px 30px;
+            transition: all 0.3s;
+        }
+
+        .action-card:hover {
+            border-color: #FF385C;
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(255,56,92,0.15);
+        }
+
+        .action-emoji {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .action-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #222222;
+            margin-bottom: 20px;
+        }
+
+        .action-list {
+            list-style: none;
+        }
+
+        .action-list li {
+            padding: 10px 0;
+            padding-left: 24px;
+            font-size: 16px;
+            color: #484848;
+            position: relative;
+            line-height: 1.6;
+        }
+
+        .action-list li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #FF385C;
+            font-weight: 600;
+        }
+
+        /* London themed divider */
+        .divider {
+            height: 300px;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.3)),
+                        url('https://images.unsplash.com/photo-1533929736458-ca588d08c8be?w=1600') center/cover;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 32px;
+            font-weight: 300;
+            text-align: center;
+            padding: 40px;
+        }
+
+        /* Footer */
+        footer {
+            background: #F9F9F9;
+            padding: 80px 0 40px;
+            margin-top: 100px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 80px;
+            margin-bottom: 60px;
+        }
+
+        footer h3 {
+            font-size: 20px;
+            font-weight: 600;
+            color: #222222;
+            margin-bottom: 20px;
+        }
+
+        footer p {
+            font-size: 16px;
+            color: #717171;
+            line-height: 1.7;
+            margin-bottom: 16px;
+        }
+
+        footer a {
+            color: #FF385C;
+            text-decoration: none;
+            font-weight: 500;
+            transition: opacity 0.2s;
+        }
+
+        footer a:hover {
+            opacity: 0.8;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 40px;
+            border-top: 1px solid #DDDDDD;
+            font-size: 14px;
+            color: #717171;
+        }
+
+        /* Download button */
+        .download-section {
+            text-align: center;
+            padding: 60px 0;
+            background: #F9F9F9;
+        }
+
+        .download-btn {
+            display: inline-block;
+            background: #FF385C;
+            color: white;
+            padding: 16px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+        }
+
+        .download-btn:hover {
+            background: #E61E4D;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255,56,92,0.3);
+        }
+
+        @media (max-width: 768px) {
+            .cover h1 { font-size: 40px; }
+            .stats-grid,
+            .action-grid,
+            .footer-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Cover with London Background -->
+<div class="cover">
+    <div class="cover-content">
+        <div class="cover-icon">🏠</div>
+        <h1>What Really Determines Airbnb Prices in London</h1>
+        <div class="cover-subtitle">
+            An analysis of 85,000+ listings reveals that property characteristics overwhelm host behavior in determining optimal pricing
+        </div>
+        <div class="cover-meta">
+            Kirti Rawat • MS Project Management • Northeastern University • October 2025
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="quick-stats">
+    <div class="container">
+        <h2 class="stats-title">The Numbers That Matter</h2>
+        <p class="stats-subtitle">Four key findings from our comprehensive analysis</p>
+        
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">📍</div>
+                <div class="stat-number">£42</div>
+                <div class="stat-label">Central London Premium</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🏡</div>
+                <div class="stat-number">£107</div>
+                <div class="stat-label">Entire Home Advantage</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-number">34%</div>
+                <div class="stat-label">Variance Explained</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-number">£24</div>
+                <div class="stat-label">Host Behavior Limit</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Main Content -->
+<div class="container">
+
+    <!-- Executive Summary -->
+    <div class="section">
+        <div class="section-label">Executive Summary</div>
+        <div class="section-title">The Geography of Value</div>
+        <div class="section-intro">
+            Our analysis of London's Airbnb market reveals a fundamental truth: where your property sits and what you offer matters far more than how you behave as a host.
+        </div>
+
+        <div class="content">
+            <p>
+                We studied <strong>85,432 active listings</strong> across London to understand pricing dynamics. The findings challenge common assumptions about revenue optimization. While hosts invest considerable effort in response times and acceptance rates, these factors explain less than 1% of pricing variation.
+            </p>
+            <p>
+                Instead, <strong>location and property type dominate the pricing equation.</strong> A property in Westminster commands a £42 premium over identical properties in outer boroughs. An entire flat generates £107 more per night than a private room. These are structural advantages that operational excellence cannot replicate.
+            </p>
+            <p>
+                The implications are significant for hosts, investors, and policymakers. For hosts, this means pricing strategy should anchor on property fundamentals rather than behavioral optimization. For investors, it validates location-first acquisition criteria. For policymakers, it quantifies the affordability pressure created by short-term rental concentration in central boroughs.
+            </p>
+        </div>
+
+        <div class="insight">
+            <div class="insight-header">
+                <div class="insight-emoji">💡</div>
+                <div class="insight-label">Core Insight</div>
+            </div>
+            <div class="insight-content">
+                Hosts cannot optimize their way past structural constraints. A private room in Hackney will never achieve the same pricing power as an entire flat in Kensington, regardless of how quickly messages get answered. This is not a failure of host quality but a reflection of fundamental market dynamics.
+            </div>
+        </div>
+    </div>
+
+    <!-- Finding 1: Location -->
+    <div class="section" style="background: #FAFAFA; margin-left: -40px; margin-right: -40px; padding-left: 40px; padding-right: 40px;">
+        <div class="section-label">Finding 01</div>
+        <div class="section-title">The £42 Geography Premium</div>
+        <div class="section-intro">
+            Westminster, Camden, Kensington & Chelsea, and Islington form London's pricing elite
+        </div>
+
+        <div class="content">
+            <p>
+                Central London boroughs command a <strong>consistent £42 per night premium</strong> over other areas. This differential persists even when controlling for room type, host response metrics, and other variables. The statistical evidence is robust: a t-statistic of 54.14 (p<0.001) with a tight 95% confidence interval of [£40.68, £43.74].
+            </p>
+            <p>
+                What makes this finding particularly striking is its independence from other factors. We isolated the location effect by examining properties of the same type with similar host characteristics. The premium remains consistent. <strong>Geography is destiny</strong> in London's short-term rental market.
+            </p>
+        </div>
+
+               <div class="insight">
+            <div class="insight-header">
+                <div class="insight-emoji">🎯</div>
+                <div class="insight-label">Strategic Implication</div>
+            </div>
+            <div class="insight-content">
+                For hosts in central boroughs, this £42 premium compounds to over £15,000 annually. This justifies premium positioning and should inform pricing confidence. For hosts in outer boroughs, understanding this structural constraint helps set realistic revenue expectations and focus improvement efforts on controllable factors like property presentation.
+            </div>
+        </div>
+    </div>
+
+    <!-- London Visual Break -->
+    <div class="divider">
+        <div>85,432 listings analyzed across 33 London boroughs</div>
+    </div>
+
+    <!-- Finding 2: Room Type -->
+    <div class="section">
+        <div class="section-label">Finding 02</div>
+        <div class="section-title">Product Definition Drives Price</div>
+        <div class="section-intro">
+            The £100+ gap between entire homes and private rooms reflects fundamental product differentiation
+        </div>
+
+        <div class="content">
+            <p>
+                Room type is not a minor variable in the pricing equation. It represents <strong>fundamental product segmentation.</strong> Entire homes average £209 per night, private rooms £94, and shared rooms £54. These are not marginal differences requiring careful statistical analysis to detect. They are obvious, large, and economically meaningful.
+            </p>
+            <p>
+                The effect sizes confirm this intuition. Cohen's d values exceeding 1.5 indicate very large practical significance. In statistical terms, room type explains more pricing variance than any other single factor we measured. <strong>The product matters more than the provider.</strong>
+            </p>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Property Type</th>
+                    <th>Average Nightly Rate</th>
+                    <th>Differential from Entire Home</th>
+                    <th>Sample Size</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="background: #FFF5F7;">
+                    <td><strong>Entire home/apartment</strong></td>
+                    <td><strong>£209</strong></td>
+                    <td>Baseline</td>
+                    <td>48,721</td>
+                </tr>
+                <tr>
+                    <td>Private room</td>
+                    <td>£94</td>
+                    <td style="color: #FF385C; font-weight: 600;">-£107</td>
+                    <td>32,849</td>
+                </tr>
+                <tr>
+                    <td>Shared room</td>
+                    <td>£54</td>
+                    <td style="color: #FF385C; font-weight: 600;">-£138</td>
+                    <td>3,862</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="content">
+            <p>
+                This finding has immediate practical applications. Investors considering property conversion should model the trade-offs carefully. A three-bedroom property converted to three private room listings generates approximately £282 nightly (3 × £94), compared to £209 as a single entire-home rental. However, the room-by-room approach requires more operational complexity, guest management, and potentially different licensing.
+            </p>
+        </div>
+    </div>
+
+    <!-- Finding 3: Host Behavior -->
+    <div class="section" style="background: #FAFAFA; margin-left: -40px; margin-right: -40px; padding-left: 40px; padding-right: 40px;">
+        <div class="section-label">Finding 03</div>
+        <div class="section-title">The Optimization Paradox</div>
+        <div class="section-intro">
+            Host performance metrics show statistical relationships but minimal economic impact
+        </div>
+
+        <div class="content">
+            <p>
+                This is where our findings diverge most sharply from conventional wisdom. Airbnb's platform architecture emphasizes host performance: response rates, acceptance rates, Superhost status. The implicit message is clear: <strong>optimize these metrics to charge more.</strong>
+            </p>
+            <p>
+                Our regression analysis tells a different story. Improving acceptance rates from 0% to 100% correlates with just £24 in additional pricing power. Not £24 per night, but £24 total. Each extra minimum night requirement adds 6 pence to the nightly rate. Host response rates fail to reach statistical significance in the multivariate model (p=0.233).
+            </p>
+        </p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Host Metric</th>
+                    <th>Price Impact</th>
+                    <th>Variance Explained (R²)</th>
+                    <th>Assessment</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Acceptance Rate (0% → 100%)</td>
+                    <td>+£24</td>
+                    <td>0.24%</td>
+                    <td style="color: #FF385C;">Economically negligible</td>
+                </tr>
+                <tr>
+                    <td>Minimum Nights (+1 night)</td>
+                    <td>+£0.06</td>
+                    <td>0.02%</td>
+                    <td style="color: #FF385C;">Economically negligible</td>
+                </tr>
+                <tr>
+                    <td>Response Rate</td>
+                    <td>+£2.23</td>
+                    <td>Not significant</td>
+                    <td style="color: #FF385C;">p=0.233</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="insight">
+            <div class="insight-header">
+                <div class="insight-emoji">🔍</div>
+                <div class="insight-label">Why This Happens</div>
+            </div>
+            <div class="insight-content">
+                Host performance metrics influence <strong>booking probability</strong> and guest satisfaction, but they do not determine <strong>optimal pricing.</strong> This distinction is fundamental. Being a responsive, flexible host helps you get more bookings at your chosen price point. It does not materially change what that price point should be.
+            </div>
+        </div>
+    </div>
+
+    <!-- Comprehensive Model -->
+    <div class="section">
+        <div class="section-label">Integrated Analysis</div>
+        <div class="section-title">What the Complete Model Reveals</div>
+        <div class="section-intro">
+            Multivariate regression isolates independent effects and controls for confounding variables
+        </div>
+
+        <div class="content">
+            <p>
+                Simple comparisons can mislead. Central London hosts might have higher acceptance rates because they can afford to be selective. Are we measuring location effects or behavioral effects? <strong>Multivariate regression answers this by examining all variables simultaneously.</strong>
+            </p>
+            <p>
+                Our final model incorporates location (central vs. non-central), room type (four categories), and host response rate. The model explains 34% of price variance with an F-statistic of 3,847 (p<0.001). Variance inflation factors remain below 3 for all predictors, confirming no problematic multicollinearity.
+            </p>
+        </div>
+
+        <div class="content">
+            <p>
+                The visualization tells the story clearly. Location and room type coefficients show large effects with narrow confidence intervals. The host response rate coefficient is small and crosses zero, indicating no reliable effect. <strong>What you own matters. How you behave as a host does not.</strong>
+            </p>
+        </div>
+    </div>
+
+    <!-- Applications -->
+    <div class="section" style="background: #FAFAFA; margin-left: -40px; margin-right: -40px; padding-left: 40px; padding-right: 40px;">
+        <div class="section-label">Strategic Applications</div>
+        <div class="section-title">Translating Data to Decisions</div>
+
+        <div class="action-grid">
+            <div class="action-card">
+                <div class="action-emoji">🏠</div>
+                <div class="action-title">For Property Hosts</div>
+                <ul class="action-list">
+                    <li>Price according to your location tier with confidence</li>
+                    <li>Invest in property improvements and professional photography</li>
+                    <li>Understand that room type is a fundamental product decision</li>
+                    <li>Maintain host standards for booking conversion, not pricing power</li>
+                    <li>Stop obsessing over acceptance rate optimization</li>
+                </ul>
+            </div>
+
+            <div class="action-card">
+                <div class="action-emoji">💼</div>
+                <div class="action-title">For Real Estate Investors</div>
+                <ul class="action-list">
+                    <li>Weight location as the primary acquisition criterion</li>
+                    <li>Calculate the £42 annual premium (£15,330 per year)</li>
+                    <li>Prioritize entire-unit properties in your portfolio</li>
+                    <li>Model room-by-room vs. entire-unit rental economics</li>
+                    <li>Recognize property characteristics as fixed pricing assets</li>
+                </ul>
+            </div>
+
+            <div class="action-card">
+                <div class="action-emoji">💻</div>
+                <div class="action-title">For Platform Designers</div>
+                <ul class="action-list">
+                    <li>Separate pricing algorithms from conversion models</li>
+                    <li>Weight property attributes over host metrics (4:1 ratio)</li>
+                    <li>Educate hosts on the conversion vs. pricing distinction</li>
+                    <li>Build location-based pricing benchmarking tools</li>
+                    <li>Clarify that Superhost status aids visibility, not pricing</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- Methodology -->
+    <div class="section">
+        <div class="section-label">Research Methodology</div>
+        <div class="section-title">How We Conducted This Analysis</div>
+
+        <div class="content">
+            <p>
+                <strong>Data Foundation:</strong> We utilized InsideAirbnb's public dataset from January 2025, comprising comprehensive information on London's short-term rental market. After quality controls (removing listings priced below £5 as probable errors and applying IQR methodology for outlier management), our final dataset included 85,432 properties.
+            </p>
+            <p>
+                <strong>Statistical Approach:</strong> We employed a three-phase methodology. First, exploratory data analysis to understand distributions and identify relationships. Second, hypothesis testing to validate directional expectations. Third, multivariate regression to isolate independent effects while controlling for confounding variables.
+            </p>
+            <p>
+                <strong>Model Validation:</strong> We checked variance inflation factors (all below 3, indicating no multicollinearity), examined residual plots for assumption violations, and conducted Shapiro-Wilk and Breusch-Pagan tests. While some minor deviations from perfect normality appeared (expected with large samples), the model remains robust and reliable.
+            </p>
+        </div>
+
+        <div class="insight">
+            <div class="insight-header">
+                <div class="insight-emoji">⚠️</div>
+                <div class="insight-label">Important Limitations</div>
+            </div>
+            <div class="insight-content">
+                This is a cross-sectional analysis, which means we observe correlations rather than proving causation. We lack data on amenities, photo quality, review sentiment, and seasonal dynamics. Our findings reflect London market characteristics in January 2025 and may not generalize to other cities or time periods. The model explains 34% of variance, which is substantial but not comprehensive. The remaining 66% likely reflects factors we did not measure.
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Section -->
+    <div class="download-section">
+        <h2 style="font-size: 28px; margin-bottom: 20px; color: #222222;">Download Complete Report</h2>
+        <p style="font-size: 16px; color: #717171; margin-bottom: 30px;">Get the full analysis with detailed methodology and appendices</p>
+        <button class="download-btn" onclick="window.print()">Download as PDF</button>
+        <p style="font-size: 14px; color: #717171; margin-top: 16px;">Use your browser's Print function and select "Save as PDF"</p>
+    </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+    <div class="container">
+        <div class="footer-grid">
+            <div>
+                <h3>About This Research</h3>
+                <p>
+                    This analysis was conducted as part of ALY 6010 (Probability Theory and Introductory Statistics) at Northeastern University. It demonstrates the application of statistical modeling to real-world business problems, with particular emphasis on translating quantitative findings into strategic insights.
+                </p>
+                <p>
+                    All code, methodologies, and data sources are documented in the accompanying GitHub repository. The analysis uses publicly available data from InsideAirbnb, released under Creative Commons license.
+                </p>
+            </div>
+            <div>
+                <h3>Connect</h3>
+                <p>
+                    <strong>Kirti Rawat</strong><br>
+                    MS Project Management<br>
+                    Northeastern University
+                </p>
+                <p style="margin-top: 24px;">
+                    <a href="https://linkedin.com/in/YOUR-rawatkirtik" target="_blank">LinkedIn Profile</a><br>
+                    <a href="https://github.com/rawkirtigif" target="_blank">GitHub </a><br>
+                    <a href="mailto:rawat.ki@northeastern.edu">Email</a>
+                </p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            Data Analysis Report • October 2025 • Created with R and statistical modeling
+        </div>
+    </div>
+</footer>
+
+<script>
+// Smooth scroll for any internal links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if(target) {
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+});
+</script>
+
+</body>
+</html>
